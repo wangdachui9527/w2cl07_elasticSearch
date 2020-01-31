@@ -6,6 +6,7 @@ import cn.w2cl.es.service.ItemService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -45,9 +46,9 @@ public class ESTest {
     @Test
     public void testModify(){
         Item item = new Item();
-        item.setId(100);
+        item.setId(19);
         item.setTitle("学习Elasticsearch");
-        item.setContent("自学 使用SpringData ES 完成搜索功能");
+        item.setContent("努力学习 使用SpringData ES 完成搜索功能");
         this.itemService.save(item);
     }
 
@@ -59,6 +60,12 @@ public class ESTest {
         this.itemService.delete(item);
     }
 
+    //删除所有
+    @Test
+    public void testDeleteAll(){
+        this.itemService.deleteAll();
+    }
+
     //批量保存
     @Test
     public void testSaveAll(){
@@ -66,12 +73,60 @@ public class ESTest {
         for(int i = 1 ; i <= 100; i++){
             Item item = new Item();
             item.setId(i);
-            item.setTitle("学习Elasticsearch" + i);
-            item.setContent("自学 使用SpringData ES 完成搜索功能" + i);
+            item.setTitle("SpringData ES " + i);
+            item.setContent("今天我们使用SpringData ES完成job搜索功能。" + i);
             list.add(item);
         }
         this.itemService.saveAll(list);
     }
 
+    //普通查询所有
+    @Test
+    public void testFindAll(){
+        Iterable<Item> all = this.itemService.findAll();
+        for (Item item : all) {
+            System.out.println(item);
+        }
+    }
 
+
+    //分页查询
+    //注意分页的page是从0开始查询的，为了方便理解，已经在dao层的参数中进行了-1操作
+    @Test
+    public void testFindAllByPage(){
+        Page<Item> byPage = this.itemService.findByPage(2, 10);
+        List<Item> content = byPage.getContent();
+        for (Item item : content) {
+            System.out.println(item);
+        }
+    }
+
+    //复杂查询
+    //复杂查询需要注意方法名称的命名方式  and or 等
+    //根据title和content来交集查询
+    @Test
+    public void testFindByTitleAndContent(){
+        List<Item> list = this.itemService.findByTitleAndContent("SpringData ES","今天我们使用SpringData ES完成job搜索功能。");
+        for (Item item : list) {
+            System.out.println(item);
+        }
+    }
+
+    //根据title和content来并集查询
+    @Test
+    public void testFindByTitleOrContent(){
+        List<Item> list = this.itemService.findByTitleOrContent("22","23",1,5);
+        for (Item item : list) {
+            System.out.println(item);
+        }
+    }
+
+    //根据title和content以及id的范围来交集分页查询
+    @Test
+    public void testFindByTitleAndContentAndIdBetween(){
+        List<Item> list = this.itemService.findByTitleAndContentAndIdBetween("ES","搜索",11,17,1,10);
+        for (Item item : list) {
+            System.out.println(item);
+        }
+    }
 }
