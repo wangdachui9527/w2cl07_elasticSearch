@@ -1,12 +1,22 @@
 package cn.w2cl.es.pojo;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 /**
  * @Authror 卫骏
  * @Date 2020/1/31 14:36
  */
+@Document(indexName = "item",type = "item")
 public class Item {
+    @Id
+    @Field(index = true,store = true,type = FieldType.Integer)
     private Integer id;
+    @Field(index = true,store = true,analyzer = "ik_smart",searchAnalyzer = "ik_smart",type = FieldType.text)
     private String title;
+    @Field(index = true,store = true,analyzer = "ik_smart",searchAnalyzer = "ik_smart",type = FieldType.text)
     private String content;
 
     public Integer getId() {
